@@ -29,7 +29,7 @@ def post_message():
         matches = re.findall(pattern, old_dan_score)
 # 将匹配结果转换为字典
         filtered_data = {key: int(value) for key, value in matches}
-        my = "rmb="+rmb+"&bt="+bt+"&os="+filtered_data
+        my = "rmb="+rmb+"&bt="+bt+"&os="+str(filtered_data)
     else:
         my = "error"
     return my
