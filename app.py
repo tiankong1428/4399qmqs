@@ -1,8 +1,6 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
-
-def get_data():
 
 @app.route('/message', methods=['POST'])
 def post_message():
