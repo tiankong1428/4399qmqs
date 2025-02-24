@@ -13,7 +13,10 @@ def post_message():
     cs = requests.get("https://service-5hxd8gip-1252368878.sh.apigw.tencentcs.com/release/query_all?id="+str(id)+"&cmd=2&platform=1011").text
     a = "".join(re.findall(r'"weaponIDList": (.*?), "',cs))
     ap = "".join(re.findall(r'"atlasPower": (.*?),',cs))
-    if str(tj) == ap and str(len) == a:
+    data_list = ast.literal_eval(a)
+# 获取列表长度
+    length = len(data_list)
+    if str(tj) == ap and str(len) == length:
         rmb ="".join(re.findall(r'"rmb": (.*?),',cs))
         bt = "".join(re.findall(r'"birthTime": (.*?),',cs))
         pattern = r'"oldDanScore":\s*(\{[^{}]*\})'
@@ -25,9 +28,6 @@ def post_message():
         matches = re.findall(pattern, old_dan_score)
 # 将匹配结果转换为字典
         filtered_data = {key: int(value) for key, value in matches}
-        data_list = ast.literal_eval(a)
-# 获取列表长度
-        length = len(data_list)
         my = "rmb="+rmb+"&bt="+bt+"&os="+filtered_data
     else:
         my = "0"
