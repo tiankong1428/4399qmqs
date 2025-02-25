@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 import requests
 import re
 import ast
@@ -16,6 +16,7 @@ REQUEST_INTERVAL = timedelta(hours=1)
 def check_request_interval():
     if os.path.exists("ban.txt"):
         ban = open("ban.txt","r",encoding="utf-8").read()
+        print(ban)
         client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
         if client_ip in ban:
             return "ban"
