@@ -3,6 +3,7 @@ import requests
 import re
 import ast
 from datetime import datetime, timedelta
+import os
 
 app = Flask(__name__)
 
@@ -13,17 +14,25 @@ REQUEST_INTERVAL = timedelta(hours=1)
 
 @app.before_request
 def check_request_interval():
-    ban = open("/ban111/ban.txt","r",encoding="utf-8").read()
-    client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
-    if client_ip in ban:
-        return "ban"
-
+    if os.path.exists("ban.txt"):
+        ban = open("ban.txt","r",encoding="utf-8").read()
+        client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+        if client_ip in ban:
+            return "ban"
+@app.route('/download_log')
+def download_log():
+    try:
+        # 返回日志文件
+        return send_file(LOG_FILE, as_attachment=True, download_name='rz.txt')
+    except FileNotFoundError:
+        return "Log file not found.", 404
 @app.route('/ban111', methods=['POST'])
 def get_message():
     data = request.json
     ip = data.get("i","")
-    ban = open("ban.txt","a", encoding="utf-8")
+    ban = open("ban.txt","w", encoding="utf-8")
     ban.write(ip)
+    ban.close()
     return ip
 @app.route('/message', methods=['POST'])
 def post_message():
