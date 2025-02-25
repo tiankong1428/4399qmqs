@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import requests
 import re
 import ast
-from datetime import datetime
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
@@ -14,7 +14,9 @@ def post_message():
     tj = data.get("tj",0)
     le = data.get("len",0)
     client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
-    request_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    utc_time = datetime.utcnow()  # 获取 UTC 时间
+    china_time = utc_time + timedelta(hours=8)  # 手动调整为北京时间
+    request_time = china_time.strftime('%Y-%m-%d %H:%M:%S')
     rz.write(str(client_ip)+" "+str(id)+" "+str(request_time)+"\n")
     cs = requests.get("https://service-5hxd8gip-1252368878.sh.apigw.tencentcs.com/release/query_all?id="+str(id)+"&cmd=2&platform=1011").text
     a = "".join(re.findall(r'"weaponIDList": (.*?), "',cs))
