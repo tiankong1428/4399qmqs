@@ -16,15 +16,16 @@ REQUEST_INTERVAL = timedelta(hours=1)
 def check_request_interval():
     if os.path.exists("ban.txt"):
         ban = open("ban.txt","r",encoding="utf-8").read()
-        print(ban)
         client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+        print(client_ip)
         if client_ip in ban:
+            print("ban")
             return "ban"
 @app.route('/download_log')
 def download_log():
     try:
         # 返回日志文件
-        return send_file(LOG_FILE, as_attachment=True, download_name='rz.txt')
+        return send_file("rz.txt", as_attachment=True, download_name='rz.txt')
     except FileNotFoundError:
         return "Log file not found.", 404
 @app.route('/ban111', methods=['POST'])
