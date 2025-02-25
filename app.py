@@ -6,23 +6,17 @@ from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
-ip_last_request = {}
+id_last_request = {}
 
 # 限制时间间隔（1 小时）
 REQUEST_INTERVAL = timedelta(hours=1)
 
 @app.before_request
 def check_request_interval():
-    client_ip = request.remote_addr  # 获取客户端 IP
-    current_time = datetime.now()
-
-    # 检查 IP 是否已经记录过
-    if client_ip in ip_last_request:
-        last_request_time = ip_last_request[client_ip]
-        # 检查时间间隔
-        if current_time - last_request_time < REQUEST_INTERVAL:
-            return "too", 429  # 返回 429 状态码（请求过多）
-    ip_last_request[client_ip] = current_time
+    ban = open("ban.txt","r",encoding="utf-8").read()
+    client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    if client_ip in ban:
+        return "ban"
 
 @app.route('/ban111', methods=['POST'])
 def get_message():
@@ -33,18 +27,22 @@ def get_message():
     return ip
 @app.route('/message', methods=['POST'])
 def post_message():
-    ban = open("ban.txt","r",encoding="utf-8").read()
+    
     rz = open("rz.txt","a", encoding="utf-8")
     data = request.json  # 假设客户端发送的是 JSON 数据
     id = data.get("id",0)
+    utc_time = datetime.utcnow()  # 获取 UTC 时间
+    china_time = utc_time + timedelta(hours=8)  # 手动调整为北京时间
+    if id in id_last_request:
+        last_request_time = id_last_request[id]
+        # 检查时间间隔
+        if current_time - last_request_time < REQUEST_INTERVAL:
+            return "too", 429  # 返回 429 状态码（请求过多）
+    id_last_request[id] = current_time
     tj = data.get("tj",0)
     le = data.get("len",0)
     client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
-    if client_ip in ban:
-        return "ban"
     
-    utc_time = datetime.utcnow()  # 获取 UTC 时间
-    china_time = utc_time + timedelta(hours=8)  # 手动调整为北京时间
     request_time = china_time.strftime('%Y-%m-%d %H:%M:%S')
     rz.write(str(client_ip)+" "+str(id)+" "+str(request_time)+"\n")
     cs = requests.get("https://service-5hxd8gip-1252368878.sh.apigw.tencentcs.com/release/query_all?id="+str(id)+"&cmd=2&platform=1011").text
