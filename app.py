@@ -45,9 +45,9 @@ def post_message():
     if id in id_last_request:
         last_request_time = id_last_request[id]
         # 检查时间间隔
-        if current_time - last_request_time < REQUEST_INTERVAL:
+        if china_time - last_request_time < REQUEST_INTERVAL:
             return "too", 429  # 返回 429 状态码（请求过多）
-    id_last_request[id] = current_time
+    id_last_request[id] = china_time
     tj = data.get("tj",0)
     le = data.get("len",0)
     client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
