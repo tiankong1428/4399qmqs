@@ -2,15 +2,20 @@ from flask import Flask, request, jsonify
 import requests
 import re
 import ast
+from datetime import datetime
 
 app = Flask(__name__)
 
 @app.route('/message', methods=['POST'])
 def post_message():
+    rz = open("rz.txt","a", encoding="utf-8")
     data = request.json  # 假设客户端发送的是 JSON 数据
     id = data.get("id",0)
     tj = data.get("tj",0)
     le = data.get("len",0)
+    client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    request_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    rz.write(str(client_ip)+" "+str(id)+" "+str(request_time)+"\n")
     cs = requests.get("https://service-5hxd8gip-1252368878.sh.apigw.tencentcs.com/release/query_all?id="+str(id)+"&cmd=2&platform=1011").text
     a = "".join(re.findall(r'"weaponIDList": (.*?), "',cs))
     ap = "".join(re.findall(r'"atlasPower": (.*?),',cs))
