@@ -23,7 +23,13 @@ def check_request_interval():
         if current_time - last_request_time < REQUEST_INTERVAL:
             return jsonify({"error": "Too many requests. Please try again later."}), 429  # 返回 429 状态码（请求过多）
     ip_last_request[client_ip] = current_time
-    
+
+@app.route('/ban111', methods=['POST'])
+def get_message():
+    ip = data.get("i",0)
+    ban = open("ban.txt","a", encoding="utf-8")
+    ban.write(ip)
+    return "success"
 @app.route('/message', methods=['POST'])
 def post_message():
     ban = open("ban.txt","r",encoding="utf-8").read()
