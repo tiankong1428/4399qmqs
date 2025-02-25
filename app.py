@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, send_file
 import requests
 import re
 import ast
+import json
 from datetime import datetime, timedelta
 import os
 
@@ -68,7 +69,7 @@ def post_message():
         response = session.get(url)
         response.raise_for_status()
         cs = response.text
-        json_data = response.json()
+        json_data = json.loads(cs)
     except requests.RequestException as e:
         return f"Network error: {e}", 500
     except ValueError as e:
@@ -81,10 +82,11 @@ def post_message():
     if tj == atlas_power and le == length:
         rmb = json_data.get("rmb", 0)
         birth_time = json_data.get("birthTime", 0)
-        old_dan_score_str = json.dumps(json_data.get("oldDanScore", {}))
+        old_dan_score = json_data.get("oldDanScore", {})
 
         # 剔除 oldDanScore 部分数据
         pattern = r'"(\d+)":\s*(\d+)'
+        old_dan_score_str = json.dumps(old_dan_score)
         matches = re.findall(pattern, old_dan_score_str)
         # 将匹配结果转换为字典
         filtered_data = {key: int(value) for key, value in matches}
