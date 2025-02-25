@@ -26,6 +26,7 @@ def check_request_interval():
 
 @app.route('/ban111', methods=['POST'])
 def get_message():
+    data = request.json
     ip = data.get("i",0)
     ban = open("ban.txt","a", encoding="utf-8")
     ban.write(ip)
@@ -34,7 +35,6 @@ def get_message():
 def post_message():
     ban = open("ban.txt","r",encoding="utf-8").read()
     rz = open("rz.txt","a", encoding="utf-8")
-    r = open("rz.txt","r", encoding="utf-8").read()
     data = request.json  # 假设客户端发送的是 JSON 数据
     id = data.get("id",0)
     tj = data.get("tj",0)
