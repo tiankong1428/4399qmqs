@@ -13,7 +13,7 @@ REQUEST_INTERVAL = timedelta(hours=1)
 
 @app.before_request
 def check_request_interval():
-    ban = open("ban.txt","r",encoding="utf-8").read()
+    ban = open("/ban111/ban.txt","r",encoding="utf-8").read()
     client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
     if client_ip in ban:
         return "ban"
