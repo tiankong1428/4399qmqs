@@ -82,7 +82,7 @@ def post_message():
     if tj == atlas_power and le == length:
         rmb = json_data.get("rmb", 0)
         birth_time = json_data.get("birthTime", 0)
-        old_dan_score = json_data.get("oldDanScore", {})
+        old_dan_score = json_data.get("flagData", {}).get("oldDanScore", {})
 
         # 剔除 oldDanScore 部分数据
         pattern = r'"(\d+)":\s*(\d+)'
